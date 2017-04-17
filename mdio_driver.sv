@@ -13,17 +13,35 @@ endfunction
 task run_phase(uvm_phase phase);
   forever
     begin         
-      repeat(200) @top.clk; // clk generation 400ns max period 
+      repeat(200) @top.clk; // master should generate the clk , min 400ns as per wiki 
         mdio_vif.clk = 1;
       repeat(200) @top.clk;
         mdio_vif.clk = 0;
    end
 endtask: run_phase
 
-task mdio_read(input bit [8:0] phy_addr, input bit [15:0] reg_addr, output bit [31:0] data);
+task mdio_read(input bit [4:0] phy_addr, input bit [4:0] reg_addr, output bit [15:0] data);
+  
+  mdio_vif.data <= 0; // start pulse 
+  @mdio_vif.clk;
+  mdio_vif.data <= 1;
+  
+  mdio_vif.data <= 1; // read code 
+  @mdio_vif.clk;
+  mdio_vif.data <= 0;
+
+  
 endtask 
 
-task mdio_write(input bit [8:0] phy_addr, input bit [15:0] reg_addr, input [31:0] data);
+task mdio_write(input bit [4:0] phy_addr, input bit [4:0] reg_addr, input [15:0] data);
+    
+  mdio_vif.data <= 0; // start pulse 
+  @mdio_vif.clk;
+  mdio_vif.data <= 1;
+  
+  mdio_vif.data <= 0; // write code 
+  @mdio_vif.clk;
+  mdio_vif.data <= 1;
 endtask
 
 
