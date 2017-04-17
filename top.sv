@@ -2,7 +2,7 @@
 // components needed 
 // 1. Dut instance 
 // 2. interface 
-// 3. clock generation 
+// 3. tb clock generation , master clk will be from driver 
 
 module top;
 import uvm_pkg::*;
@@ -10,9 +10,9 @@ import uvm_pkg::*;
   mdio_if mdio_if_0;
   mdio mdio_inst;
   
-  // temp code 
-  assign mdio_if_0.clk = clk; // driver needs to generate the clk as per wiki
-                              // add a divider logic in driver for clk generation. min clk period: 400ns 
+
+ // assign mdio_if_0.clk = clk; // driver needs to generate the clk as per wiki
+                              // add a frequency divider logic in driver for clk generation. min clk period: 400ns 
   
   assign mdio_inst.clk  = mdio_if_0.clk;
   assign mdio_inst.data = mdio_if_0.data;
@@ -27,7 +27,7 @@ import uvm_pkg::*;
   initial begin // clock generation for tb 
     clk = 0 ;
     forever begin
-    #1ns clk = ~clk ; // 2ns clock period 
+    #0.5ns clk = ~clk ; // 1ns clock period 
     end 
   end 
   
