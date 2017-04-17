@@ -11,14 +11,13 @@ function new(string name = "mdio_driver", uvm_component parent = null);
 endfunction
 
 task run_phase(uvm_phase phase);
-//  forever
-//    begin
-//      seq_item_port.get_next_item(req); // Gets the sequence_item from the sequence      
-//      for(int i = 0; i < 8; i++) begin 
-//        mdio_vif.data <= req.data[i];
-//      end
-//      seq_item_port.item_done(); 
-//    end
+  forever
+    begin         
+      repeat(200) @top.clk; // clk generation 400ns max period 
+        mdio_vif.clk = 1;
+      repeat(200) @top.clk;
+        mdio_vif.clk = 0;
+   end
 endtask: run_phase
 
 task mdio_read(input bit [8:0] phy_addr, input bit [15:0] reg_addr, output bit [31:0] data);
