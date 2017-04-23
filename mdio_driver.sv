@@ -13,9 +13,9 @@ endfunction
 task run_phase(uvm_phase phase);
   forever
     begin         
-      repeat(200) @(top.clk); // master should generate the clk , min 400ns as per wiki 
+      repeat(200) @(mdio_vif.tb_clk); // master should generate the clk , min 400ns as per wiki 
         mdio_vif.clk = 1;
-      repeat(200) @(top.clk);
+      repeat(200) @(mdio_vif.tb_clk);
         mdio_vif.clk = 0;
    end
 endtask: run_phase
