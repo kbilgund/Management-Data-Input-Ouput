@@ -4,11 +4,13 @@
 // 2. interface 
 // 3. tb clock generation , master clk will be from driver 
 
-module top;
+module top_tb;
+
 import uvm_pkg::*;
-  wire clk;
-  mdio_if mdio_if_0;
-  mdio mdio_inst;
+import mdio_pkg::*;
+  reg tb_clk;
+  mdio_if mdio_if_0();
+  mdio mdio_inst();
   
 
  // assign mdio_if_0.clk = clk; // driver needs to generate the clk as per wiki
@@ -16,19 +18,28 @@ import uvm_pkg::*;
   
   assign mdio_inst.clk  = mdio_if_0.clk;
   assign mdio_inst.data = mdio_if_0.data;
-  pullup(mdio_inst.data); // since it is bidirectional pin
+  pullup (mdio_inst.data); // since it is bidirectional pin
+  pullup (mdio_if_0.data);
+  assign mdio_if_0.tb_clk = tb_clk;
+  assign mdio_inst.reset = mdio_if_0.reset;
   
   initial
   begin
-    uvm_config_db #(virtual mdio_if)::set(null, "uvm_test_top", "mdio_vif" , mdio_if_0);
-    run_test();
+    uvm_config_db #(virtual mdio_if)::set(null, "*", "mdio_vif" , mdio_if_0);
+    run_test("mdio_test");
   end
   
   initial begin // clock generation for tb 
-    clk = 0 ;
+    tb_clk = 0 ;
     forever begin
-    #0.5ns clk = ~clk ; // 1ns clock period 
+    #0.5ns tb_clk = ~ tb_clk ; // 1ns clock period 
     end 
   end 
-  
-endmodule 
+
+
+  initial begin 
+    $dumpvars(0, top_tb);
+    #1000;
+    $finish;
+  end 
+endmodule: top_tb
